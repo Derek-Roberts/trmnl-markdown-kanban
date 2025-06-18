@@ -9,12 +9,12 @@ import (
 )
 
 // TokenFile is the path where the token will be stored.
-// You can make this configurable via env var if desired.
+// It defaults to DATA_DIR/token.json, where DATA_DIR is set via env var.
 var TokenFile = filepath.Join(os.Getenv("DATA_DIR"), "token.json")
 
 // SaveToken serializes the OAuth2 token to disk.
 func SaveToken(tok *oauth2.Token) error {
-    // Ensure directory exists
+    // Ensure directory exists with restricted permissions
     if err := os.MkdirAll(filepath.Dir(TokenFile), 0o700); err != nil {
         return err
     }

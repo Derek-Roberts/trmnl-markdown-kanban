@@ -7,15 +7,22 @@ import (
     "html/template"
     "log"
     "net/http"
-    "os"
 
     "github.com/Derek-Roberts/trmnl-markdown-kanban/pkg/kanban"
     "github.com/Derek-Roberts/trmnl-markdown-kanban/pkg/oauth"
 )
 
+// provider holds the TokenProvider for authenticated requests
+var provider *oauth.TokenProvider
+
+// SetTokenProvider initializes the global provider
+func SetTokenProvider(p *oauth.TokenProvider) {
+    provider = p
+}
+
 // installRequest is TRMNL’s payload to /install
 type installRequest struct {
-    Code                   string `json:"code"`
+    Code                    string `json:"code"`
     InstallationCallbackURL string `json:"installation_callback_url"`
 }
 
@@ -39,10 +46,18 @@ func InstallHandler(w http.ResponseWriter, r *http.Request) {
         http.Error(w, "token exchange failed", http.StatusInternalServerError)
         return
     }
-    // TODO: persist tok.AccessToken, tok.RefreshToken, tok.Expiry, etc.
+
+    // Persist token so we survive restarts
+    if err := oauth.SaveToken(tok); err != nil {
+        log.Printf("warning: failed to save token: %v", err)
+        // proceed even if saving fails
+    }
+
+    // Initialize provider for future requests
+    provider = oauth.NewTokenProvider(tok)
 
     // Call installation callback
-    cbBody := map[string]string{"installation_id": tok.AccessToken} // or your own ID
+    cbBody := map[string]string{"installation_id": tok.AccessToken}
     bodyBytes, _ := json.Marshal(cbBody)
     cbReq, _ := http.NewRequestWithContext(
         context.Background(),

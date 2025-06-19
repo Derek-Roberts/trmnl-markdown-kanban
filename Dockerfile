@@ -9,6 +9,11 @@ RUN apk add --no-cache git && \
 
 # Final stage: distroless container
 FROM gcr.io/distroless/static-debian12
-COPY --from=build /server /server
+# Set a working directory so relative paths resolve
+WORKDIR /app
+# Copy the server binary
+COPY --from=build /server /app/server
+# Copy your templates into the same image
+COPY --from=build /src/templates /app/templates
 USER nonroot:nonroot
-ENTRYPOINT ["/server"]
+ENTRYPOINT ["/app/server"]

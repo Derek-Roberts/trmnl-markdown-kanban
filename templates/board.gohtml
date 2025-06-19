@@ -1,3 +1,4 @@
+{{/* templates/board.gohtml */}}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,17 +14,17 @@
 </head>
 <body>
   <div class="board">
-    {% for col in Columns %}
+    {{- range .Columns }}
       <div class="column">
-        <h2>{{ col.Title }}</h2>
-        {% for card in col.Cards %}
+        <h2>{{ .Title }}</h2>
+        {{- range .Cards }}
           <div class="card">
-            <strong>{{ card.Title }}</strong>
-            <div>{{ card.Content }}</div>
+            <strong>{{ .Title }}</strong>
+            <div>{{ .Content }}</div>
           </div>
-        {% endfor %}
+        {{- end }}
       </div>
-    {% endfor %}
+    {{- end }}
   </div>
 </body>
 </html>

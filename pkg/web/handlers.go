@@ -78,7 +78,7 @@ func InstallHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // Pre-parse the template
-var boardTmpl = template.Must(template.ParseFiles("templates/board.liquid"))
+var boardTmpl = template.Must(template.ParseFiles("templates/board.gohtml"))
 
 // MarkupHandler renders the Kanban board as HTML/Liquid
 func MarkupHandler(w http.ResponseWriter, r *http.Request) {
